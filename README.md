@@ -38,7 +38,7 @@
     ```
     poetry install
     ```
-    
+
     Также будет создано виртуальное окружение, если привычнее видеть его в
     директории проекта, то
     используйте [настройку](https://python-poetry.org/docs/configuration/#adding-or-updating-a-configuration-setting) `virtualenvs.in-project`
@@ -46,6 +46,7 @@
 
 3. **Docker**
 
+   To be written
 
 4. **pre-commit**
    [Документация](https://pre-commit.com/)  
@@ -55,7 +56,7 @@
     ```shell
     pre-commit run --all-files
     ```
-   
+
 
 # Разворачиваем проект локально
 
