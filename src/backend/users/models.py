@@ -74,27 +74,3 @@ class User(AbstractUser):
         ordering = [
             "username",
         ]
-
-
-class Group(models.Model):
-    """Модель группы/сообщества."""
-
-    title = models.CharField(verbose_name="Название группы", max_length=35)
-    slug = models.SlugField(verbose_name="Псевдоним группы", unique=True, max_length=35)
-    creator = models.ForeignKey(
-        "User",
-        related_name="creator",
-        on_delete=models.CASCADE,
-    )
-    description = models.CharField(
-        verbose_name="Описание группы",
-        max_length=150,
-        blank=True,
-    )
-
-    class Meta:
-        verbose_name = "Группа"
-        verbose_name_plural = "Группы"
-        ordering = [
-            "slug",
-        ]
