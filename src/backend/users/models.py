@@ -3,7 +3,7 @@ import datetime
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from .constants import Sex
+from .constants import FriendRequestStatus, Sex
 
 
 class User(AbstractUser):
@@ -73,4 +73,56 @@ class User(AbstractUser):
         verbose_name_plural = "Пользователи"
         ordering = [
             "username",
+        ]
+
+
+class FriendRequest(models.Model):
+    """Модель запроса в друзья."""
+
+    status = models.IntegerField(
+        choices=FriendRequestStatus,
+        default=1,
+    )
+    sent_from = models.ForeignKey(
+        User,
+        related_name="requests_sent",
+        on_delete=models.CASCADE,
+    )
+    sent_to = models.ForeignKey(
+        User,
+        related_name="requests_received",
+        on_delete=models.CASCADE,
+    )
+    sent_on = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    class Meta:
+        verbose_name = "Запрос дружбы"
+        verbose_name_plural = "Запросы дружбы"
+        ordering = [
+            "sent_on",
+        ]
+
+
+class Friendship(models.Model):
+    """Модель дружбы между пользователями."""
+
+    who = models.ForeignKey(
+        User,
+        related_name="friends",
+        on_delete=models.CASCADE,
+    )
+    with_who = models.ForeignKey(
+        User,
+        related_name="friends_with",
+        on_delete=models.CASCADE,
+    )
+    friends_from = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Друг"
+        verbose_name_plural = "Друзья"
+        ordering = [
+            "friends_from",
         ]
