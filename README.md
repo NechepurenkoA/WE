@@ -73,6 +73,8 @@
 
 _To be written_
 
+### Авторы : Нечепуренко Артём
+
 <!-- MARKDOWN LINKS & BADGES -->
 
 [Python-url]: https://www.python.org/
