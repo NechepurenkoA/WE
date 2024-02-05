@@ -20,9 +20,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "djoser",
     "rest_framework",
     "rest_framework.authtoken",
+    "djoser",
     "users",
     "communities",
 ]
@@ -96,7 +96,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = "users.User"
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ru-ru"
 
 TIME_ZONE = "UTC"
 
@@ -131,7 +131,7 @@ PASSWORD_HASHERS = [
 ]
 
 DJOSER = {
-    "LOGIN_FIELD": "username",
+    "LOGIN_FIELD": "email",
 }
 
 API_V1_PREFIX = "v1"
