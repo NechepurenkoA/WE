@@ -29,11 +29,9 @@ class UserAdmin(admin.ModelAdmin):
 class Friendship(admin.ModelAdmin):
     """Админка дружбы."""
 
-    list_display = ("who", "with_who")
     search_fields = ("username",)
     list_filter = (
-        "who",
-        "with_who",
+        "users",
         "friends_from",
     )
     empty_value_display = "-пусто-"
@@ -43,11 +41,11 @@ class Friendship(admin.ModelAdmin):
 class FriendRequest(admin.ModelAdmin):
     """Админка запроса дружбы."""
 
-    list_display = ("status", "sent_from", "sent_to")
+    list_display = ("status", "sender", "receiver")
     search_fields = ("username",)
     list_filter = (
-        "sent_from",
-        "sent_to",
+        "sender",
+        "receiver",
         "sent_on",
     )
     empty_value_display = "-пусто-"
