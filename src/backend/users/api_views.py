@@ -17,9 +17,7 @@ class UserSingUpViewSet(
 
     queryset = User.objects.all()
     serializer_class = UserSignUpSerializer
-    permission_classes = [
-        permissions.AllowAny,
-    ]
+    permission_classes = (permissions.AllowAny,)
 
 
 class UserViewSet(
@@ -35,9 +33,7 @@ class UserViewSet(
 
     queryset = User.objects.all()
     serializer_class = UserRetrieveSerializer
-    permission_classes = [
-        IsAuthenticatedOrAdmin,
-    ]
+    permission_classes = (IsAuthenticatedOrAdmin,)
     lookup_field = "username"
 
     @action(
