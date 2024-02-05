@@ -1,4 +1,5 @@
 from django.db import models
+
 from users.models import User
 
 
@@ -28,6 +29,7 @@ class Community(models.Model):
         verbose_name="Аватар сообщества",
         upload_to="community/avatar",
         blank=True,
+        null=True,
     )
     followers = models.ManyToManyField(
         User,
@@ -37,7 +39,7 @@ class Community(models.Model):
     )
 
     @property
-    def get_followers_amount(self):
+    def get_followers_amount(self) -> int:
         """Метод для получения кол-ва подписчиков."""
         return self.followers.all().count()
 
