@@ -39,7 +39,7 @@ class Community(models.Model):
     @property
     def get_followers_amount(self):
         """Метод для получения кол-ва подписчиков."""
-        return len(self.followers.all())
+        return self.followers.all().count()
 
     class Meta:
         verbose_name = "Сообщество"
