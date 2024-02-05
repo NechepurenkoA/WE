@@ -76,6 +76,7 @@ class User(AbstractUser):
         ]
 
 
+# WIP, examply only
 class FriendRequest(models.Model):
     """Модель запроса в друзья."""
 
@@ -83,12 +84,12 @@ class FriendRequest(models.Model):
         choices=FriendRequestStatus,
         default=1,
     )
-    sent_from = models.ForeignKey(
+    sender = models.ForeignKey(
         User,
         related_name="requests_sent",
         on_delete=models.CASCADE,
     )
-    sent_to = models.ForeignKey(
+    receiver = models.ForeignKey(
         User,
         related_name="requests_received",
         on_delete=models.CASCADE,
@@ -105,20 +106,22 @@ class FriendRequest(models.Model):
         ]
 
 
+# WIP, example only
 class Friendship(models.Model):
     """Модель дружбы между пользователями."""
 
-    who = models.ForeignKey(
+    users = models.ManyToManyField(
         User,
         related_name="friends",
-        on_delete=models.CASCADE,
     )
-    with_who = models.ForeignKey(
+    current_user = models.ForeignKey(
         User,
-        related_name="friends_with",
+        related_name="owner",
         on_delete=models.CASCADE,
     )
-    friends_from = models.DateTimeField(auto_now_add=True)
+    friends_from = models.DateTimeField(
+        auto_now_add=True,
+    )
 
     class Meta:
         verbose_name = "Друг"
