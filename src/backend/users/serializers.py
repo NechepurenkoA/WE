@@ -27,11 +27,12 @@ class UserRetrieveSerializer(serializers.ModelSerializer):
             "are_friends",
         )
 
+    # WIP
     def get_are_friends(self, obj):
         request = self.context["request"]
         return Friendship.objects.filter(
-            who=request.user.id,
-            with_who=obj,
+            current_user_id=request.user.id,
+            users=obj.id,
         ).exists()
 
 
@@ -58,3 +59,10 @@ class UserSignUpSerializer(serializers.ModelSerializer):
     def validate_password(self, data):
         password_validation.validate_password(data)
         return data
+
+    def create(self, validated_data):
+        password = validated_data.pop("password")
+        user = User(**validated_data)
+        user.set_password(password)
+        user.save()
+        return user
