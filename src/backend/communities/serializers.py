@@ -11,15 +11,20 @@ class CommunitySerializer(serializers.ModelSerializer):
         source="get_followers_amount",
         read_only=True,
     )
+    is_followed = serializers.SerializerMethodField(
+        source="get_is_followed",
+        read_only=True,
+    )
 
     class Meta:
         model = Community
         fields = [
+            "avatar",
             "title",
             "slug",
             "creator",
             "description",
-            "avatar",
+            "is_followed",
             "followers_amount",
         ]
         extra_kwargs = {
@@ -27,6 +32,10 @@ class CommunitySerializer(serializers.ModelSerializer):
                 "read_only": True,
             },
         }
+
+    def get_is_followed(self, obj) -> bool:
+        user = self.context["request"].user
+        return Community.objects.filter(followers__id=user.id, id=obj.id).exists()
 
     def create(self, validated_data):
         community = Community.objects.create(
