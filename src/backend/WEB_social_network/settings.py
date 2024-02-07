@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     "djoser",
     "users.apps.UsersConfig",
     "communities.apps.CommunitiesConfig",
+    "posts.apps.PostsConfig",
 ]
 
 MIDDLEWARE = [
