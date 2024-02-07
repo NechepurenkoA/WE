@@ -17,7 +17,7 @@ class Community(models.Model):
     )
     creator = models.ForeignKey(
         User,
-        related_name="creator",
+        related_name="created_communities",
         on_delete=models.CASCADE,
     )
     description = models.CharField(
@@ -34,7 +34,7 @@ class Community(models.Model):
     followers = models.ManyToManyField(
         User,
         verbose_name="Подписчики",
-        related_name="followers",
+        related_name="communities",
         blank=True,
     )
 
