@@ -23,8 +23,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "djoser",
-    "users",
-    "communities",
+    "users.apps.UsersConfig",
+    "communities.apps.CommunitiesConfig",
 ]
 
 MIDDLEWARE = [
