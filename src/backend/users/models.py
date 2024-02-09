@@ -48,6 +48,8 @@ class User(AbstractUser):
         blank=True,
         max_length=150,
     )
+    # WIP
+    # friends = models.ManyToManyField(...)
 
     @property
     def get_age(self):
