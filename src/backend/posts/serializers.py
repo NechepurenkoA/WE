@@ -5,6 +5,7 @@ from .services import validate_text_or_image
 
 
 class PostSerializer(serializers.ModelSerializer):
+    """Сериализатор модели 'Post'."""
 
     author = serializers.SlugRelatedField(
         slug_field="username",
