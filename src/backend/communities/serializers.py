@@ -6,6 +6,7 @@ from .models import Community
 
 
 class CommunitySerializer(serializers.ModelSerializer):
+    """Сериализатор модели 'Community'."""
 
     followers_amount = serializers.IntegerField(
         source="get_followers_amount",
@@ -47,6 +48,7 @@ class CommunitySerializer(serializers.ModelSerializer):
 
 
 class CommunityFollowSerializer(serializers.Serializer):
+    """Сериализатор подписывания на сообщество."""
 
     def validate(self, data):
         request = self.context["request"]
