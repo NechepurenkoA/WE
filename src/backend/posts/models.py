@@ -22,7 +22,6 @@ class Post(models.Model):
         verbose_name="Сообщества, куда отправили пост",
         related_name="posts",
         blank=True,
-        null=True,
     )
     text = models.TextField(
         verbose_name="Текст поста",
@@ -40,7 +39,6 @@ class Post(models.Model):
         verbose_name="Лайки",
         related_name="liked",
         blank=True,
-        null=True,
     )
 
     class Meta:
