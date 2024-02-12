@@ -31,7 +31,7 @@ class Friendship(admin.ModelAdmin):
 
     search_fields = ("username",)
     list_filter = (
-        "users",
+        "current_user",
         "friends_from",
     )
     empty_value_display = "-пусто-"
