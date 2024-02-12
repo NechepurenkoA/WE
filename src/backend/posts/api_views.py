@@ -1,6 +1,7 @@
-from rest_framework import mixins, permissions, viewsets
+from rest_framework import mixins, viewsets
 
 from .models import Post
+from .permissions import IsAuthenticatedOrAdminForPosts
 from .serializers import PostSerializer
 
 
@@ -16,4 +17,4 @@ class PostsViewSet(
 
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrAdminForPosts,)

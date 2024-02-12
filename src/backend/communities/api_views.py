@@ -1,12 +1,13 @@
 from django.forms.models import model_to_dict
 from django.shortcuts import get_object_or_404
-from rest_framework import mixins, permissions, status, viewsets
+from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from users.serializers import UserRetrieveSerializer
 
 from .models import Community
+from .permissions import IsAuthenticatedOrAdminForCommunities
 from .serializers import CommunityFollowSerializer, CommunitySerializer
 from .services import FollowService
 
@@ -22,7 +23,7 @@ class CommunityViewSet(
     queryset = Community.objects.all()
     serializer_class = CommunitySerializer
     lookup_field = "slug"
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrAdminForCommunities,)
 
     @action(
         methods=["get"],
@@ -78,3 +79,15 @@ class CommunityViewSet(
             {"message": f"Вы отписались от сообщества {community.title}!"},
             status=status.HTTP_204_NO_CONTENT,
         )
+
+    # WIP
+    @action(
+        methods=["get"],
+        detail=True,
+        url_path="posts",
+        lookup_field="slug",
+        serializer_class=...,
+    )
+    def community_posts(self, request, slug):
+        """Просмотр постов сообщества."""
+        ...
