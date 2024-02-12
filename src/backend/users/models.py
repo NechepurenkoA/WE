@@ -49,7 +49,11 @@ class User(AbstractUser):
         max_length=150,
     )
     # WIP
-    # friends = models.ManyToManyField(...)
+    friends = models.ManyToManyField(
+        "User",
+        through="Friendship",
+        related_name="my_friends",
+    )
 
     @property
     def get_age(self):
@@ -78,7 +82,7 @@ class User(AbstractUser):
         ]
 
 
-# WIP, examply only
+# WIP
 class FriendRequest(models.Model):
     """Модель запроса в друзья."""
 
@@ -106,20 +110,23 @@ class FriendRequest(models.Model):
         ordering = [
             "sent_on",
         ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["sender", "receiver"],
+                name="unique_sender_receiver",
+            ),
+        ]
 
 
-# WIP, example only
+# WIP
 class Friendship(models.Model):
     """Модель дружбы между пользователями."""
 
-    users = models.ManyToManyField(
-        User,
-        related_name="friends",
+    another_user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="friend"
     )
     current_user = models.ForeignKey(
-        User,
-        related_name="owner",
-        on_delete=models.CASCADE,
+        User, on_delete=models.CASCADE, related_name="owner"
     )
     friends_from = models.DateTimeField(
         auto_now_add=True,
@@ -130,4 +137,10 @@ class Friendship(models.Model):
         verbose_name_plural = "Друзья"
         ordering = [
             "friends_from",
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["another_user", "current_user"],
+                name="unique_user_another_user",
+            ),
         ]
