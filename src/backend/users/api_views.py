@@ -6,14 +6,15 @@ from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import User
+from .models import Friendship, User
 from .permissions import IsAuthenticatedOrAdminForUsers
 from .serializers import (
+    FriendAcceptDeclineSerializer,
     FriendRequestSerializer,
     UserRetrieveSerializer,
     UserSignUpSerializer,
 )
-from .services import FriendRequestServices
+from .services import FriendRequestServices, FriendshipServices
 
 
 class UserSingUpViewSet(
@@ -47,6 +48,11 @@ class UserViewSet(
 
     def get_friend_request_serializer(self, *args, **kwargs):
         serializer_class = FriendRequestSerializer
+        kwargs.setdefault("context", self.get_serializer_context())
+        return serializer_class(*args, **kwargs)
+
+    def get_accept_friend_request_serializer(self, *args, **kwargs):
+        serializer_class = FriendAcceptDeclineSerializer
         kwargs.setdefault("context", self.get_serializer_context())
         return serializer_class(*args, **kwargs)
 
@@ -84,7 +90,6 @@ class UserViewSet(
                 status=status.HTTP_204_NO_CONTENT,
             )
 
-    # WIP
     @action(
         methods=["post"],
         detail=True,
@@ -93,9 +98,15 @@ class UserViewSet(
     )
     def accept_friend_request(self, request, username):
         """Принятие запроса дружбы."""
-        ...
+        user = get_object_or_404(User, username=username)
+        serializer = self.get_accept_friend_request_serializer(data=model_to_dict(user))
+        serializer.is_valid(raise_exception=True)
+        FriendRequestServices.accept_friend_request(self, user)
+        return Response(
+            {"message": f"Вы приняли запрос дружбы от пользователя {username}!"},
+            status=status.HTTP_201_CREATED,
+        )
 
-    # WIP
     @action(
         methods=[HTTPMethod.DELETE],
         detail=True,
@@ -104,18 +115,42 @@ class UserViewSet(
     )
     def decline_friend_request(self, request, username):
         """Отклонение запроса дружбы."""
-        ...
+        user = get_object_or_404(User, username=username)
+        serializer = self.get_accept_friend_request_serializer(data=model_to_dict(user))
+        serializer.is_valid(raise_exception=True)
+        FriendRequestServices.decline_friend_request(self, user)
+        return Response(
+            {"message": f"Вы отклонили запрос дружбы от пользователя {username}!"},
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class FriendshipViewSet(
     mixins.ListModelMixin,
+    mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
     serializer_class = UserRetrieveSerializer
     permission_classes = [
         permissions.IsAuthenticated,
     ]
+    lookup_field = "username"
 
     def get_queryset(self):
-        query = self.request.user.friends.all()
+        """Запрос возвращающий друзей пользователя."""
+        query = self.request.user.friends_list
         return query
+
+    def destroy(self, request, *args, **kwargs):
+        """Удаление из друзей."""
+        user = get_object_or_404(User, username=kwargs["username"])
+        get_object_or_404(
+            Friendship,
+            another_user=user,
+            current_user=request.user,
+        )
+        FriendshipServices(request).remove_friend(user)
+        return Response(
+            {"message": f"Вы удалили пользователя {user.username} из друзей!"},
+            status=status.HTTP_204_NO_CONTENT,
+        )
