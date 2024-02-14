@@ -7,9 +7,7 @@ from .models import FriendRequest, User
 
 
 class UserRetrieveSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор модели 'User'.
-    """
+    """Сериализатор модели 'User'."""
 
     are_friends = serializers.SerializerMethodField(
         read_only=True,
@@ -36,6 +34,7 @@ class UserRetrieveSerializer(serializers.ModelSerializer):
 
 
 class UserSignUpSerializer(serializers.ModelSerializer):
+    """Сериализатор для регистрации пользователей."""
 
     class Meta:
         model = User
@@ -79,7 +78,7 @@ class FriendRequestSerializer(serializers.Serializer):
                 {"error": "Нельзя проводить подобные операции с самим собой!"}
             )
         if request.method == "POST":
-            if User.objects.filter(my_friends=user.id).exists():
+            if User.objects.filter(friends_list=user.id).exists():
                 raise ValidationError(
                     {"error": f"Вы уже друзья с пользователем {username}!"}
                 )
@@ -110,5 +109,32 @@ class FriendRequestSerializer(serializers.Serializer):
                         "error": f"Вы не отправляли запрос"
                         f" дружбы пользователю {username}!"
                     }
+                )
+        return data
+
+
+class FriendAcceptDeclineSerializer(serializers.Serializer):
+
+    def validate(self, data):
+        request = self.context["request"]
+        username = self.context["view"].kwargs["username"]
+        user = get_object_or_404(User, username=username)
+        if user == request.user:
+            raise ValidationError(
+                {"error": "Нельзя проводить подобные операции с самим собой!"}
+            )
+        if request.method == "POST":
+            if not FriendRequest.objects.filter(
+                receiver=request.user, sender=user
+            ).exists():
+                raise ValidationError(
+                    {"error": "Этот пользователь не отправлял вам запрос дружбы!"}
+                )
+        if request.method == "DELETE":
+            if not FriendRequest.objects.filter(
+                receiver=request.user, sender=user
+            ).exists():
+                raise ValidationError(
+                    {"error": "Этот пользователь не отправлял вам запрос дружбы!"}
                 )
         return data
