@@ -10,9 +10,3 @@ class Sex(models.TextChoices):
         "Девушка",
         "Девушка",
     )
-
-
-class FriendRequestStatus(models.IntegerChoices):
-    PENDING = (1, "Pending")
-    ACCEPTED = (2, "Accepted")
-    REJECTED = (3, "Rejected")
