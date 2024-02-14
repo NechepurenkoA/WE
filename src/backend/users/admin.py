@@ -41,7 +41,7 @@ class Friendship(admin.ModelAdmin):
 class FriendRequest(admin.ModelAdmin):
     """Админка запроса дружбы."""
 
-    list_display = ("status", "sender", "receiver")
+    list_display = ("sender", "receiver")
     search_fields = ("username",)
     list_filter = (
         "sender",
