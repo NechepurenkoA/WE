@@ -69,9 +69,11 @@ class UserSignUpSerializer(serializers.ModelSerializer):
 class FriendRequestSerializer(serializers.Serializer):
     """Сериализатор для запроса дружбы."""
 
+    username = serializers.SlugField()
+
     def validate(self, data):
         request = self.context["request"]
-        username = self.context["view"].kwargs["username"]
+        username = data["username"]
         user = get_object_or_404(User, username=username)
         if user == request.user:
             raise ValidationError(
@@ -114,10 +116,13 @@ class FriendRequestSerializer(serializers.Serializer):
 
 
 class FriendAcceptDeclineSerializer(serializers.Serializer):
+    """Сериализатор accept / decline запроса дружбы."""
+
+    username = serializers.SlugField()
 
     def validate(self, data):
         request = self.context["request"]
-        username = self.context["view"].kwargs["username"]
+        username = data["username"]
         user = get_object_or_404(User, username=username)
         if user == request.user:
             raise ValidationError(

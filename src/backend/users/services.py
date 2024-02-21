@@ -2,12 +2,13 @@ from .models import FriendRequest, Friendship, User
 
 
 class FriendRequestServices(object):
-    """Сервися для отправки/принятия запросов дружбы."""
+    """Сервися для отправки/принятия/отклонения запросов дружбы."""
 
     def __init__(self, request):
         self.request = request
 
     def send_friend_request(self, user: User) -> None:
+        """Создание запроса дружбы."""
         instance = FriendRequest.objects.create(
             sender=self.request.user,
             receiver=user,
@@ -52,17 +53,19 @@ class FriendRequestServices(object):
 
 
 class FriendshipServices(object):
+    """Сервис для связи дружбы."""
 
     def __init__(self, request):
         self.request = request
 
-    def remove_friend(self, user: User) -> None:
+    def remove_friend(self, friendship: Friendship) -> None:
+        """Удаление связей между пользователями."""
         Friendship.objects.filter(
-            another_user_id=user.id,
-            current_user_id=self.request.user.id,
+            another_user_id=friendship.another_user.id,
+            current_user_id=friendship.current_user.id,
         ).delete()
         Friendship.objects.filter(
-            another_user_id=self.request.user.id,
-            current_user_id=user.id,
+            another_user_id=friendship.current_user.id,
+            current_user_id=friendship.another_user.id,
         ).delete()
         return None
