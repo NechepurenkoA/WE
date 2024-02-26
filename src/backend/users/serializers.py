@@ -143,3 +143,18 @@ class FriendAcceptDeclineSerializer(serializers.Serializer):
                     {"error": "Этот пользователь не отправлял вам запрос дружбы!"}
                 )
         return data
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    """
+    Сериализатор смены пароля.
+    """
+
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
+    def validate_old_password(self, data):
+        request = self.context["request"]
+        if request.user.check_password(data):
+            return data
+        raise ValidationError("Старый пароль не совпадает!")

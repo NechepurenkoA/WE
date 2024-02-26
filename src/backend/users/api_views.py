@@ -2,18 +2,20 @@ from http import HTTPMethod
 
 from django.shortcuts import get_object_or_404
 from rest_framework import mixins, permissions, status, viewsets
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Friendship, User
 from .permissions import IsAuthenticatedOrAdminForUsers
 from .serializers import (
+    ChangePasswordSerializer,
     FriendAcceptDeclineSerializer,
     FriendRequestSerializer,
     UserRetrieveSerializer,
     UserSignUpSerializer,
 )
-from .services import FriendRequestServices, FriendshipServices
+from .services import FriendRequestServices, FriendshipServices, UserServices
 
 
 class UserSingUpViewSet(
@@ -126,6 +128,8 @@ class FriendshipViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
+    """Вьюсет для списка друзей."""
+
     serializer_class = UserRetrieveSerializer
     permission_classes = [
         permissions.IsAuthenticated,
@@ -151,3 +155,17 @@ class FriendshipViewSet(
             {"message": f"Вы удалили пользователя {kwargs['username']} из друзей!"},
             status=status.HTTP_204_NO_CONTENT,
         )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    serializer = ChangePasswordSerializer(
+        data=request.data, context={"request": request}
+    )
+    if serializer.is_valid():
+        UserServices(request).change_password(serializer.validated_data["new_password"])
+        return Response(
+            {"message": "Пароль изменен успешно!"}, status=status.HTTP_200_OK
+        )
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

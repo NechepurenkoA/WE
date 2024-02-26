@@ -162,6 +162,7 @@ cython_debug/
 # Directories with static and media
 static/
 media/
+sent_emails/
 
 # Logging data folder
 .data/

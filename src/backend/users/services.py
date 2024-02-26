@@ -1,4 +1,18 @@
+from django.contrib.auth import update_session_auth_hash
+
 from .models import FriendRequest, Friendship, User
+
+
+class UserServices(object):
+    """Сервис для пользователей."""
+
+    def __init__(self, request):
+        self.request = request
+
+    def change_password(self, new_password):
+        self.request.user.set_password(new_password)
+        self.request.user.save()
+        update_session_auth_hash(self.request, self.request.user)
 
 
 class FriendRequestServices(object):
