@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "djoser",
     "django_rest_passwordreset",
+    "django_filters",
     "users.apps.UsersConfig",
     "communities.apps.CommunitiesConfig",
     "posts.apps.PostsConfig",
@@ -125,9 +126,6 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.AllowAny",
-    ],
-    "DEFAULT_FILTER_BACKENDS": [
-        "django_filters.rest_framework.DjangoFilterBackend",
     ],
 }
 
