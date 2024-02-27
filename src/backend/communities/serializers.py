@@ -1,3 +1,5 @@
+from http import HTTPMethod
+
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -20,6 +22,7 @@ class CommunitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Community
         fields = [
+            "id",
             "avatar",
             "title",
             "slug",
@@ -30,6 +33,9 @@ class CommunitySerializer(serializers.ModelSerializer):
         ]
         extra_kwargs = {
             "creator": {
+                "read_only": True,
+            },
+            "id": {
                 "read_only": True,
             },
         }
@@ -58,13 +64,13 @@ class CommunityFollowSerializer(serializers.Serializer):
             slug=community_slug,
         ).creator
         user = request.user
-        if request.method == "POST":
+        if request.method == HTTPMethod.POST:
             if Community.objects.filter(
                 followers=user,
                 slug=community_slug,
             ).exists():
                 raise ValidationError({"error": "Вы уже подписаны на это сообщество!"})
-        if request.method == "DELETE":
+        if request.method == HTTPMethod.DELETE:
             if creator == user:
                 raise ValidationError(
                     {"error": "Нельзя отписаться от созданного вами сообщества!"}

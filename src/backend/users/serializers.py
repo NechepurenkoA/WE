@@ -1,3 +1,5 @@
+from http import HTTPMethod
+
 from django.contrib.auth import password_validation
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
@@ -79,7 +81,7 @@ class FriendRequestSerializer(serializers.Serializer):
             raise ValidationError(
                 {"error": "Нельзя проводить подобные операции с самим собой!"}
             )
-        if request.method == "POST":
+        if request.method == HTTPMethod.POST:
             if User.objects.filter(friends_list=user.id).exists():
                 raise ValidationError(
                     {"error": f"Вы уже друзья с пользователем {username}!"}
@@ -102,7 +104,7 @@ class FriendRequestSerializer(serializers.Serializer):
                         f" дружбы пользователю {username}!"
                     }
                 )
-        if request.method == "DELETE":
+        if request.method == HTTPMethod.DELETE:
             if not FriendRequest.objects.filter(
                 sender=request.user, receiver=user
             ).exists():
@@ -128,14 +130,14 @@ class FriendAcceptDeclineSerializer(serializers.Serializer):
             raise ValidationError(
                 {"error": "Нельзя проводить подобные операции с самим собой!"}
             )
-        if request.method == "POST":
+        if request.method == HTTPMethod.POST:
             if not FriendRequest.objects.filter(
                 receiver=request.user, sender=user
             ).exists():
                 raise ValidationError(
                     {"error": "Этот пользователь не отправлял вам запрос дружбы!"}
                 )
-        if request.method == "DELETE":
+        if request.method == HTTPMethod.DELETE:
             if not FriendRequest.objects.filter(
                 receiver=request.user, sender=user
             ).exists():

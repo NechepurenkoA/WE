@@ -157,7 +157,7 @@ class FriendshipViewSet(
         )
 
 
-@api_view(["POST"])
+@api_view([HTTPMethod.POST])
 @permission_classes([IsAuthenticated])
 def change_password(request):
     serializer = ChangePasswordSerializer(

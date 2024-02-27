@@ -1,3 +1,5 @@
+from http import HTTPMethod
+
 from django.forms.models import model_to_dict
 from django.shortcuts import get_object_or_404
 from rest_framework import mixins, status, viewsets
@@ -26,7 +28,7 @@ class CommunityViewSet(
     permission_classes = (IsAuthenticatedOrAdminForCommunities,)
 
     @action(
-        methods=["get"],
+        methods=[HTTPMethod.GET],
         detail=True,
         url_path="followers",
         lookup_field="slug",
@@ -45,7 +47,7 @@ class CommunityViewSet(
         )
 
     @action(
-        methods=["post"],
+        methods=[HTTPMethod.POST],
         detail=True,
         url_path="follow",
         lookup_field="slug",
@@ -63,7 +65,7 @@ class CommunityViewSet(
         )
 
     @action(
-        methods=["delete"],
+        methods=[HTTPMethod.DELETE],
         detail=True,
         url_path="unfollow",
         lookup_field="slug",
@@ -79,15 +81,3 @@ class CommunityViewSet(
             {"message": f"Вы отписались от сообщества {community.title}!"},
             status=status.HTTP_204_NO_CONTENT,
         )
-
-    # WIP
-    @action(
-        methods=["get"],
-        detail=True,
-        url_path="posts",
-        lookup_field="slug",
-        serializer_class=...,
-    )
-    def community_posts(self, request, slug):
-        """Просмотр постов сообщества."""
-        ...
