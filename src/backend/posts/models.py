@@ -36,6 +36,7 @@ class Post(models.Model):
     )
     likes = models.ManyToManyField(
         User,
+        through="Like",
         verbose_name="Лайки",
         related_name="liked",
         blank=True,
@@ -45,5 +46,14 @@ class Post(models.Model):
         verbose_name = "Пост"
         verbose_name_plural = "Посты"
         ordering = [
-            "publish_date",
+            "-publish_date",
         ]
+
+
+class Like(models.Model):
+    user = models.ForeignKey(User, related_name="who_liked", on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, related_name="what_liked", on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "Лайк"
+        verbose_name_plural = "Лайки"
