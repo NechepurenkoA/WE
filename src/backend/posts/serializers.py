@@ -54,18 +54,18 @@ class PostSerializer(serializers.ModelSerializer):
         return validate_text_or_image(data, image, "text")
 
     def create(self, validated_data):
-        if "communities" not in validated_data.keys():
+        try:
+            communities = validated_data.pop("communities")
+            post = Post.objects.create(
+                **validated_data, author=self.context["request"].user
+            )
+            post.communities.set(communities)
+            post.save()
+        except KeyError:
             post = Post.objects.create(
                 **validated_data, author=self.context["request"].user
             )
             post.save()
-            return post
-        communities = validated_data.pop("communities")
-        post = Post.objects.create(
-            **validated_data, author=self.context["request"].user
-        )
-        post.communities.set(communities)
-        post.save()
         return post
 
 
