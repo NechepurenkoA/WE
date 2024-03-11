@@ -45,6 +45,11 @@ class PostSerializer(serializers.ModelSerializer):
     def get_likes_amount(self, obj):
         return obj.likes.count()
 
+    def validate(self, attrs):
+        if not bool(attrs):
+            raise ValidationError("Нельзя передавать пустой JSON!")
+        return super().validate(attrs)
+
     def validate_text(self, text):
         data = self.context["request"].data
         return validate_text_or_image(data, text, "image")
