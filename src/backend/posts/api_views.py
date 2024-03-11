@@ -46,7 +46,8 @@ class PostsViewSet(
         friend_list = user.friends_list.values_list("id", flat=True)
         query_friends = Post.objects.filter(author_id__in=friend_list)
         query_communities = Post.objects.filter(communities__in=communities)
-        query = (query_friends | query_communities).distinct()
+        query_user = Post.objects.filter(author_id=user.id)
+        query = (query_friends | query_communities | query_user).distinct()
         return query
 
     @action(
