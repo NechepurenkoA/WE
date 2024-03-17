@@ -9,6 +9,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
+ASGI_APPLICATION = "ChatAPI.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
+
 DEBUG = True
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -24,9 +35,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
     "rest_framework",
-    "channels",
     "corsheaders",
+    "channels",
     "rest_framework.authtoken",
     "djoser",
     "django_rest_passwordreset",
