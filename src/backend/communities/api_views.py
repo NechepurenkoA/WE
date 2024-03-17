@@ -6,12 +6,11 @@ from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from communities.models import Community
+from communities.permissions import IsAuthenticatedOrAdminForCommunities
+from communities.serializers import CommunityFollowSerializer, CommunitySerializer
+from communities.services import FollowService
 from users.serializers import UserRetrieveSerializer
-
-from .models import Community
-from .permissions import IsAuthenticatedOrAdminForCommunities
-from .serializers import CommunityFollowSerializer, CommunitySerializer
-from .services import FollowService
 
 
 class CommunityViewSet(

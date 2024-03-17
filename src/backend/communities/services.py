@@ -1,4 +1,4 @@
-from .models import Community
+from communities.models import Community
 
 
 class FollowService(object):

@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class Sex(models.TextChoices):
+class Gender(models.TextChoices):
     MALE = (
         "Парень",
         "Парень",

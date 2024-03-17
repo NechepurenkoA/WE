@@ -6,16 +6,16 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .models import Friendship, User
-from .permissions import IsAuthenticatedOrAdminForUsers
-from .serializers import (
+from users.models import Friendship, User
+from users.permissions import IsAuthenticatedOrAdminForUsers
+from users.serializers import (
     ChangePasswordSerializer,
     FriendAcceptDeclineSerializer,
     FriendRequestSerializer,
     UserRetrieveSerializer,
     UserSignUpSerializer,
 )
-from .services import FriendRequestServices, FriendshipServices, UserServices
+from users.services import FriendRequestServices, FriendshipServices, UserServices
 
 
 class UserSingUpViewSet(
@@ -62,12 +62,11 @@ class UserViewSet(
         detail=True,
         lookup_field="username",
         url_path="send_friend_request",
+        serializer_class=FriendRequestSerializer,
     )
     def send_friend_request(self, request, username):
         """Отправление запроса дружбы."""
-        serializer = FriendRequestSerializer(
-            data={"username": username}, context=self.get_serializer_context()
-        )
+        serializer = self.get_serializer(data={"username": username})
         serializer.is_valid(raise_exception=True)
         if request.method == HTTPMethod.POST:
             user = get_object_or_404(User, username=username)
@@ -89,11 +88,12 @@ class UserViewSet(
         detail=True,
         lookup_field="username",
         url_path="accept_friend_request",
+        serializer_class=FriendAcceptDeclineSerializer,
     )
     def accept_friend_request(self, request, username):
         """Принятие запроса дружбы."""
         user = get_object_or_404(User, username=username)
-        serializer = FriendAcceptDeclineSerializer(
+        serializer = self.get_serializer(
             data={"username": username}, context=self.get_serializer_context()
         )
         serializer.is_valid(raise_exception=True)
@@ -108,11 +108,12 @@ class UserViewSet(
         detail=True,
         lookup_field="username",
         url_path="decline_friend_request",
+        serializer_class=FriendAcceptDeclineSerializer,
     )
     def decline_friend_request(self, request, username):
         """Отклонение запроса дружбы."""
         user = get_object_or_404(User, username=username)
-        serializer = FriendAcceptDeclineSerializer(
+        serializer = self.get_serializer(
             data={"username": username}, context=self.get_serializer_context()
         )
         serializer.is_valid(raise_exception=True)
@@ -137,7 +138,7 @@ class FriendshipViewSet(
     lookup_field = "username"
 
     def get_queryset(self):
-        """Запрос возвращающий друзей пользователя."""
+        """Запрос, возвращающий друзей пользователя."""
         query = self.request.user.friends_list
         return query
 
@@ -160,12 +161,15 @@ class FriendshipViewSet(
 @api_view([HTTPMethod.POST])
 @permission_classes([IsAuthenticated])
 def change_password(request):
+    """Смена пароля."""
+
     serializer = ChangePasswordSerializer(
         data=request.data, context={"request": request}
     )
     if serializer.is_valid():
         UserServices(request).change_password(serializer.validated_data["new_password"])
         return Response(
-            {"message": "Пароль изменен успешно!"}, status=status.HTTP_200_OK
+            {"message": "Пароль изменен успешно!"},
+            status=status.HTTP_200_OK,
         )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
