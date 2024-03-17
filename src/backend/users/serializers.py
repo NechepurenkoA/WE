@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from .models import FriendRequest, User
+from users.models import FriendRequest, User
 
 
 class UserRetrieveSerializer(serializers.ModelSerializer):
@@ -23,7 +23,7 @@ class UserRetrieveSerializer(serializers.ModelSerializer):
             "username",
             "first_name",
             "last_name",
-            "sex",
+            "gender",
             "age",
             "biography",
             "are_friends",
@@ -46,7 +46,7 @@ class UserSignUpSerializer(serializers.ModelSerializer):
             "password",
             "first_name",
             "last_name",
-            "sex",
+            "gender",
             "age",
             "birth_date",
             "biography",

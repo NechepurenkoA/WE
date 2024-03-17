@@ -6,10 +6,10 @@ from rest_framework import filters, mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import Post
-from .permissions import IsAuthenticatedOrAdminForPosts
-from .serializers import PostLikeSerialzier, PostSerializer
-from .services import PostServices
+from posts.models import Post
+from posts.permissions import IsAuthenticatedOrAdminForPosts
+from posts.serializers import PostLikeSerialzier, PostSerializer
+from posts.services import PostServices
 
 
 class PostsViewSet(

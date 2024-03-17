@@ -3,8 +3,8 @@ from http import HTTPMethod
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from .models import Like, Post
-from .services import validate_text_or_image
+from posts.models import Like, Post
+from posts.services import validate_text_or_image
 
 
 class PostSerializer(serializers.ModelSerializer):
