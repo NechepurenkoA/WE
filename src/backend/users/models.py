@@ -3,7 +3,7 @@ import datetime
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from .constants import Sex
+from users.constants import Gender
 
 
 class User(AbstractUser):
@@ -22,9 +22,9 @@ class User(AbstractUser):
         verbose_name="Фамилия",
         max_length=150,
     )
-    sex = models.TextField(
+    gender = models.TextField(
         verbose_name="Пол",
-        choices=Sex,
+        choices=Gender,
         blank=True,
     )
     avatar = models.ImageField(
