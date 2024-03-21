@@ -1,8 +1,8 @@
-from http import HTTPMethod
+from http import HTTPMethod, HTTPStatus
 
 import django_filters.rest_framework
 from django.shortcuts import get_object_or_404
-from rest_framework import filters, mixins, status, viewsets
+from rest_framework import filters, mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -69,7 +69,7 @@ class PostsViewSet(
                     "message": "Вы лайкнули пост!",
                     "post": self.get_serializer(post).data,
                 },
-                status.HTTP_201_CREATED,
+                HTTPStatus.CREATED,
             )
         if request.method == HTTPMethod.DELETE:
             post = get_object_or_404(Post, pk=pk)
@@ -79,6 +79,6 @@ class PostsViewSet(
                     "message": "Вы убрали лайк с поста!",
                     "post": self.get_serializer(post).data,
                 },
-                status.HTTP_204_NO_CONTENT,
+                HTTPStatus.OK,
             )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, HTTPStatus.BAD_REQUEST)

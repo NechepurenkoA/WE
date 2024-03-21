@@ -82,7 +82,9 @@ class FriendRequestSerializer(serializers.Serializer):
                 {"error": "Нельзя проводить подобные операции с самим собой!"}
             )
         if request.method == HTTPMethod.POST:
-            if User.objects.filter(friends_list=user.id).exists():
+            if FriendRequest.objects.filter(
+                sender=user, receiver=request.user
+            ).exists():
                 raise ValidationError(
                     {"error": f"Вы уже друзья с пользователем {username}!"}
                 )

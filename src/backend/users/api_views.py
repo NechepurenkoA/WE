@@ -1,7 +1,7 @@
-from http import HTTPMethod
+from http import HTTPMethod, HTTPStatus
 
 from django.shortcuts import get_object_or_404
-from rest_framework import mixins, permissions, status, viewsets
+from rest_framework import mixins, permissions, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -55,7 +55,7 @@ class UserViewSet(
     def users_own_profile(self, request):
         """Просмотр своего профиля."""
         serializer = self.get_serializer(request.user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, HTTPStatus.OK)
 
     @action(
         methods=[HTTPMethod.POST, HTTPMethod.DELETE],
@@ -73,14 +73,13 @@ class UserViewSet(
             FriendRequestServices(request).send_friend_request(user=user)
             return Response(
                 {"message": f"Вы отправили запрос дружбы пользователю {username}!"},
-                status=status.HTTP_201_CREATED,
+                HTTPStatus.CREATED,
             )
         if request.method == HTTPMethod.DELETE:
             user = get_object_or_404(User, username=username)
             FriendRequestServices(request).cancel_friend_request(user=user)
             return Response(
-                {"message": f"Вы отозвали запрос дружбы к пользователю {username}!"},
-                status=status.HTTP_204_NO_CONTENT,
+                status=HTTPStatus.NO_CONTENT,
             )
 
     @action(
@@ -92,15 +91,15 @@ class UserViewSet(
     )
     def accept_friend_request(self, request, username):
         """Принятие запроса дружбы."""
-        user = get_object_or_404(User, username=username)
         serializer = self.get_serializer(
             data={"username": username}, context=self.get_serializer_context()
         )
         serializer.is_valid(raise_exception=True)
+        user = get_object_or_404(User, username=username)
         FriendRequestServices(request).accept_friend_request(user)
         return Response(
             {"message": f"Вы приняли запрос дружбы от пользователя {username}!"},
-            status=status.HTTP_201_CREATED,
+            HTTPStatus.CREATED,
         )
 
     @action(
@@ -112,15 +111,15 @@ class UserViewSet(
     )
     def decline_friend_request(self, request, username):
         """Отклонение запроса дружбы."""
-        user = get_object_or_404(User, username=username)
         serializer = self.get_serializer(
             data={"username": username}, context=self.get_serializer_context()
         )
         serializer.is_valid(raise_exception=True)
+        user = get_object_or_404(User, username=username)
         FriendRequestServices(request).decline_friend_request(user)
         return Response(
             {"message": f"Вы отклонили запрос дружбы от пользователя {username}!"},
-            status=status.HTTP_201_CREATED,
+            status=HTTPStatus.CREATED,
         )
 
 
@@ -153,8 +152,7 @@ class FriendshipViewSet(
         )
         FriendshipServices(request).remove_friend(friendship)
         return Response(
-            {"message": f"Вы удалили пользователя {kwargs['username']} из друзей!"},
-            status=status.HTTP_204_NO_CONTENT,
+            status=HTTPStatus.NO_CONTENT,
         )
 
 
@@ -166,10 +164,10 @@ def change_password(request):
     serializer = ChangePasswordSerializer(
         data=request.data, context={"request": request}
     )
-    if serializer.is_valid():
+    if serializer.is_valid(raise_exception=True):
         UserServices(request).change_password(serializer.validated_data["new_password"])
         return Response(
             {"message": "Пароль изменен успешно!"},
-            status=status.HTTP_200_OK,
+            HTTPStatus.OK,
         )
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, HTTPStatus.BAD_REQUEST)

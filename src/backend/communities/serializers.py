@@ -56,9 +56,11 @@ class CommunitySerializer(serializers.ModelSerializer):
 class CommunityFollowSerializer(serializers.Serializer):
     """Сериализатор подписывания на сообщество."""
 
+    slug = serializers.SlugField()
+
     def validate(self, data):
         request = self.context["request"]
-        community_slug = self.context["view"].kwargs["slug"]
+        community_slug = data["slug"]
         creator = get_object_or_404(
             Community,
             slug=community_slug,

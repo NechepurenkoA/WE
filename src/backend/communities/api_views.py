@@ -1,8 +1,7 @@
-from http import HTTPMethod
+from http import HTTPMethod, HTTPStatus
 
-from django.forms.models import model_to_dict
 from django.shortcuts import get_object_or_404
-from rest_framework import mixins, status, viewsets
+from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -42,7 +41,7 @@ class CommunityViewSet(
         )
         return Response(
             serializer.data,
-            status=status.HTTP_200_OK,
+            status=HTTPStatus.OK,
         )
 
     @action(
@@ -54,13 +53,13 @@ class CommunityViewSet(
     )
     def community_follow(self, request, slug):
         """Подписка на сообщество."""
-        community = get_object_or_404(Community, slug=slug)
-        serializer = self.get_serializer(data=model_to_dict(community))
+        serializer = self.get_serializer(data={"slug": slug})
         serializer.is_valid(raise_exception=True)
+        community = get_object_or_404(Community, slug=slug)
         FollowService(request).add_follower(community)
         return Response(
             {"message": f"Вы подписались на сообщество {community.title}!"},
-            status=status.HTTP_201_CREATED,
+            status=HTTPStatus.CREATED,
         )
 
     @action(
@@ -72,11 +71,10 @@ class CommunityViewSet(
     )
     def community_unfollow(self, request, slug):
         """Отписка от сообщества."""
-        community = get_object_or_404(Community, slug=slug)
-        serializer = self.get_serializer(data=model_to_dict(community))
+        serializer = self.get_serializer(data={"slug": slug})
         serializer.is_valid(raise_exception=True)
+        community = get_object_or_404(Community, slug=slug)
         FollowService(request).remove_follower(community)
         return Response(
-            {"message": f"Вы отписались от сообщества {community.title}!"},
-            status=status.HTTP_204_NO_CONTENT,
+            status=HTTPStatus.NO_CONTENT,
         )
