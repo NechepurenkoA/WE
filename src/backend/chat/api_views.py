@@ -34,6 +34,11 @@ class ChatViewSet(
 
     def retrieve(self, request, username: str):
         participant = get_object_or_404(User, username=username)
+        if participant == request.user:
+            return Response(
+                {"error": "Нельзя проводить операции с самим собой!"},
+                HTTPStatus.FORBIDDEN,
+            )
         conversation = Chat.objects.filter(
             Q(initiator=request.user, receiver=participant)
             | Q(initiator=participant, receiver=request.user)
@@ -43,8 +48,7 @@ class ChatViewSet(
                 {"error": "У вас нет активного чата с этим пользователем!"},
                 HTTPStatus.NO_CONTENT,
             )
-        serializer = ChatSerializer(data=conversation.first())
-        serializer.is_valid()
+        serializer = ChatSerializer(instance=conversation.first())
         return Response(serializer.data, HTTPStatus.OK)
 
     @action(
@@ -63,11 +67,9 @@ class ChatViewSet(
         )
         if chat.exists():
             return self.retrieve(request, username=username)
-        else:
-            chat = ChatServices(request).start_chat(participant.id)
-            chat_serializer = ChatSerializer(
-                data=chat,
-                context=self.get_serializer_context(),
-            )
-            chat_serializer.is_valid(raise_exception=True)
-            return Response(chat_serializer.data, HTTPStatus.CREATED)
+        chat = ChatServices(request).start_chat(participant.id)
+        chat_serializer = ChatSerializer(
+            instance=chat,
+            context=self.get_serializer_context(),
+        )
+        return Response(chat_serializer.data, HTTPStatus.CREATED)

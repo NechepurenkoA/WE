@@ -19,11 +19,11 @@ class MessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        extra_kwargs = {
-            "conversation": {
-                "exclude": True,
-            }
-        }
+        fields = [
+            "sender",
+            "text",
+            "timestamp",
+        ]
 
 
 class ChatAbstractSerializer(serializers.ModelSerializer):
@@ -32,11 +32,20 @@ class ChatAbstractSerializer(serializers.ModelSerializer):
 
 
 class ChatSerializer(ChatAbstractSerializer):
-    messages = MessageSerializer(many=True)
+    messages = serializers.SerializerMethodField(method_name="get_messages")
 
     class Meta:
         model = Chat
-        fields = ["initiator", "receiver", "messages"]
+        fields = [
+            "id",
+            "initiator",
+            "receiver",
+            "messages",
+        ]
+
+    def get_messages(self, instance):
+        serializer = MessageSerializer(instance=instance.messages, many=True)
+        return serializer.data
 
 
 class ChatListSerializer(ChatAbstractSerializer):
@@ -45,10 +54,15 @@ class ChatListSerializer(ChatAbstractSerializer):
     class Meta:
         model = Chat
         fields = [
+            "id",
             "initiator",
             "receiver",
             "last_message",
         ]
+
+    def get_last_message(self, instance):
+        message = instance.messages.first()
+        return MessageSerializer(instance=message).data
 
 
 class ChatCreateSerializer(serializers.Serializer):
@@ -59,7 +73,7 @@ class ChatCreateSerializer(serializers.Serializer):
         receiver = get_object_or_404(User, username=data["username"])
         friendship = Friendship.objects.filter(
             current_user_id=request.user.id,
-            another_user=receiver.id,
+            another_user_id=receiver.id,
         )
         if not friendship.exists():
             raise ValidationError(

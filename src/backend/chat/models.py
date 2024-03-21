@@ -33,6 +33,7 @@ class Message(models.Model):
     conversation = models.ForeignKey(
         Chat,
         on_delete=models.CASCADE,
+        related_name="messages",
     )
     timestamp = models.DateTimeField(
         auto_now_add=True,

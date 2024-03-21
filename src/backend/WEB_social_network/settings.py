@@ -9,21 +9,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-ASGI_APPLICATION = "ChatAPI.asgi.application"
-
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
-        },
-    },
-}
-
 DEBUG = True
 CORS_ALLOW_ALL_ORIGINS = True
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(" ")
+# ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(" ")
+ALLOWED_HOSTS = [
+    "*",
+]
 
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
@@ -36,9 +28,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
+    "channels",
     "rest_framework",
     "corsheaders",
-    "channels",
     "rest_framework.authtoken",
     "djoser",
     "django_rest_passwordreset",
@@ -81,6 +73,20 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "WEB_social_network.wsgi.application"
+ASGI_APPLICATION = "WEB_social_network.asgi.application"
+
+
+CHANNELS_REDIS_HOST = os.getenv("REDIS_HOST", "127.0.0.1")
+CHANNELS_REDIS_PORT = os.getenv("REDIS_PORT", 6379)
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(CHANNELS_REDIS_HOST, CHANNELS_REDIS_PORT)],
+        },
+    },
+}
+SITE_ID = 1
 
 USE_SQLITE = os.getenv("USE_SQLITE", default="True") == "True"
 

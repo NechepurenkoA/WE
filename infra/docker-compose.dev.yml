@@ -17,6 +17,12 @@ services:
       timeout: 3s
       retries: 5
 
+  redis:
+    image: ${REDIS_IMAGE}
+    container_name: redis
+    ports:
+      - "6379:6379"
+
   backend:
     build:
       context: ..
@@ -31,7 +37,7 @@ services:
     command: >
       bash -c "python manage.py migrate &&
                python manage.py collectstatic --clear --noinput &&
-               uvicorn WEB_social_network.asgi:application --host 0.0.0.0 --port 80"
+               uvicorn WEB_social_network.asgi:application --host 0.0.0.0 --port 8000"
     expose:
       - "8000"
     env_file:
@@ -39,12 +45,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-
-  redis:
-    image: ${REDIS_IMAGE}
-    container_name: backend_redis
-    ports:
-      - "6379:6379"
 
   nginx:
     image: ${NGINX_IMAGE}
@@ -59,3 +59,8 @@ services:
       - ../.env
     depends_on:
       - backend
+
+volumes:
+  static:
+  media:
+  db_data:
